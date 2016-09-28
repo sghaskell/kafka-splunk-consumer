@@ -3,8 +3,23 @@ from pykafka import KafkaClient
 import logging
 import requests
 import multiprocessing
+import signal
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+jobs = []
+brokers = ["172.17.0.2:9092","172.17.0.3:9093","172.17.0.4:9094"]
+zookeeper_server = "localhost:2181"
+topic = "nginx"
+consumer_group = "shark"
+use_rdkafka = True
+splunk_server = "172.17.0.5"
+splunk_hec_port = "8088"
+splunk_hec_channel = "0cadab76-3a7b-4561-ba8a-aa3fed09cb59"
+splunk_hec_token = "B373AE38-902D-4DFC-87BE-43E0E5D5AB09"
+splunk_sourcetype = "access_combined"
+splunk_source = "hec:nginx"
+
 
 class kafkaConsumer:
 
@@ -67,32 +82,31 @@ class kafkaConsumer:
                                                                     self.splunk_server,
                                                                     self.splunk_hec_port))
                 self.messages = []
-     
-def main():
-    brokers = ["172.17.0.2:9092","172.17.0.3:9093","172.17.0.4:9094"]
-    zookeeper_server = "localhost:2181"
-    topic = "nginx"
-    consumer_group = "shark"
-    use_rdkafka = True
-    splunk_server = "172.17.0.5"
-    splunk_hec_port = "8088"
-    splunk_hec_channel = "0cadab76-3a7b-4561-ba8a-aa3fed09cb59"
-    splunk_hec_token = "B373AE38-902D-4DFC-87BE-43E0E5D5AB09"
-    splunk_sourcetype = "access_combined"
-    splunk_source = "hec:nginx"
+                consumer.commit_offsets()
 
-    kconsumer = kafkaConsumer(brokers,
-                              zookeeper_server,
-                              topic,
-                              consumer_group,
-                              use_rdkafka,
-                              splunk_server,
-                              splunk_hec_port,
-                              splunk_hec_channel,
-                              splunk_hec_token,
-                              splunk_sourcetype,
-                              splunk_source)
-    kconsumer.consume()
+def worker(num):
+    print("Worker-%s" % (num))
+    consumer = kafkaConsumer(brokers,
+                             zookeeper_server,
+                             topic,
+                             consumer_group,
+                             use_rdkafka,
+                             splunk_server,
+                             splunk_hec_port,
+                             splunk_hec_channel,
+                             splunk_hec_token,
+                             splunk_sourcetype,
+                             splunk_source)
+
+    consumer.consume()
+
+def main():
+   #kconsumer.consume()
+    for i in range(3):
+        worker_name = "worker-%s" % i
+        p = multiprocessing.Process(name=worker_name, target=worker, args=(i,))
+        jobs.append(p)
+        p.start()
 
 if __name__ == '__main__':
 
