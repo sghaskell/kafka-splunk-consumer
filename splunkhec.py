@@ -32,6 +32,5 @@ channel=%s&sourcetype=%s&source=%s' % (self.splunk_server,
                             data = '\n'.join(messages),
                             verify = False,
                             headers = {'Authorization' : self.token_string})
-        logging.debug("wrote %s messages to HEC at %s:%s" % (len(messages),
-                                                             self.splunk_server,
-                                                             self.splunk_hec_port))
+        logging.debug("wrote %s messages to HEC at %s" % (len(messages),
+                                                             self.post_string))

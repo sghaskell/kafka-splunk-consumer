@@ -3,19 +3,21 @@ from pykafka import KafkaClient
 import logging
 import multiprocessing
 from splunkhec import hec
+import argparse
+import sys
+import yaml
+from pprint import pprint
 
 jobs = []
-brokers = ["172.17.0.2:9092","172.17.0.3:9093","172.17.0.4:9094"]
-zookeeper_server = "localhost:2181"
-topic = "nginx"
-consumer_group = "shark"
-use_rdkafka = True
-splunk_server = "172.17.0.5"
-splunk_hec_port = "8088"
-splunk_hec_channel = "0cadab76-3a7b-4561-ba8a-aa3fed09cb59"
-splunk_hec_token = "B373AE38-902D-4DFC-87BE-43E0E5D5AB09"
-splunk_sourcetype = "access_combined"
-splunk_source = "hec:nginx"
+
+def parseArgs():
+    argparser = argparse.ArgumentParser() 
+    argparser.add_argument('-c',
+                           '--config',
+                           default='kafka_consumer.conf',
+                           help='Kafka consumer config file')
+    flags = argparser.parse_args()
+    return(flags)
 
 class kafkaConsumer:
     def __init__(self,
@@ -51,7 +53,7 @@ class kafkaConsumer:
     def initLogger(self):
         log_format = '%(asctime)s name=%(name)s loglevel=%(levelname)s message=%(message)s'
         logging.basicConfig(format=log_format,
-                            level=logging.INFO)
+                            level=logging.DEBUG)
 
     def consume(self):
         topic = self.client.topics[self.topic]
@@ -61,12 +63,12 @@ class kafkaConsumer:
                                                  use_rdkafka=self.use_rdkafka)
 
         # create splunk hec instance
-        splunk_hec = hec(splunk_server,
-                         splunk_hec_port,
-                         splunk_hec_channel,
-                         splunk_hec_token,
-                         splunk_sourcetype,
-                         splunk_source)
+        splunk_hec = hec(self.splunk_server,
+                         self.splunk_hec_port,
+                         self.splunk_hec_channel,
+                         self.splunk_hec_token,
+                         self.splunk_sourcetype,
+                         self.splunk_source)
         while(True):
             m = consumer.consume()
             if(len(self.messages) < self.batch_size):
@@ -81,29 +83,38 @@ class kafkaConsumer:
                 # commit offsets in Kafka
                 consumer.commit_offsets()
 
-def worker(num):
+def worker(num, config):
     worker = "Worker-%s" % (num)
     print(worker)
-    consumer = kafkaConsumer(brokers,
-                             zookeeper_server,
-                             topic,
-                             consumer_group,
-                             use_rdkafka,
-                             splunk_server,
-                             splunk_hec_port,
-                             splunk_hec_channel,
-                             splunk_hec_token,
-                             splunk_sourcetype,
-                             splunk_source)
+    consumer = kafkaConsumer(config['kafka']['brokers'],
+                             config['kafka']['zookeeper_server'],
+                             config['kafka']['topic'],
+                             config['kafka']['consumer_group'],
+                             config['kafka']['use_rdkafka'],
+                             config['hec']['host'],
+                             config['hec']['port'],
+                             config['hec']['channel'],
+                             config['hec']['token'],
+                             config['hec']['sourcetype'],
+                             config['hec']['source'])
 
     consumer.consume()
 
-def main():
-    multiprocessing.log_to_stderr(logging.INFO)
+def parseConfig(config):
+    with open(config, 'r') as stream:
+        try:
+            return(yaml.load(stream))
+        except yaml.YAMLError as exc:
+            print(exc)
 
+def main():
+    flags = parseArgs()
+    config = parseConfig(flags.config)
+    multiprocessing.log_to_stderr(logging.INFO)
+    
     for i in range(3):
         worker_name = "worker-%s" % i
-        p = multiprocessing.Process(name=worker_name, target=worker, args=(i,))
+        p = multiprocessing.Process(name=worker_name, target=worker, args=(i,config))
         jobs.append(p)
         p.start()
 
