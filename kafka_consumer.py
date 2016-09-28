@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 from pykafka import KafkaClient
-import requests
 import logging
+import requests
 import multiprocessing
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class kafkaConsumer:
+
     def __init__(self,
                  brokers=[],
                  zookeeper_server="",
@@ -17,6 +20,8 @@ class kafkaConsumer:
                  splunk_hec_token="",
                  splunk_sourcetype="",
                  splunk_source=""):
+
+
         self.max_len = 1024
         self.messages = []
         self.brokers = brokers
@@ -31,6 +36,12 @@ class kafkaConsumer:
         self.splunk_hec_token = splunk_hec_token
         self.splunk_sourcetype = splunk_sourcetype
         self.splunk_source = splunk_source
+        self.initLogger()
+
+    def initLogger(self):
+        logging.basicConfig(filename='kafka-consumer.log',
+                            format='%(asctime)s name=%(name)s loglevel=%(levelname)s message=%(message)s',
+                            level=logging.DEBUG)
 
     def consume(self):
         topic = self.client.topics[self.topic]
@@ -52,6 +63,9 @@ class kafkaConsumer:
                                     verify = False,
                                     headers = {'Authorization' : token_string}
                                    )
+                logging.debug("wrote %s messages to HEC at %s:%s" % (len(self.messages),
+                                                                    self.splunk_server,
+                                                                    self.splunk_hec_port))
                 self.messages = []
      
 def main():
