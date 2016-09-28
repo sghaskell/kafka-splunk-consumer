@@ -111,8 +111,9 @@ def main():
     flags = parseArgs()
     config = parseConfig(flags.config)
     multiprocessing.log_to_stderr(logging.INFO)
+    num_workers = config['general']['workers']
     
-    for i in range(3):
+    for i in range(num_workers):
         worker_name = "worker-%s" % i
         p = multiprocessing.Process(name=worker_name, target=worker, args=(i,config))
         jobs.append(p)
