@@ -3,7 +3,7 @@ from pykafka import KafkaClient
 import logging
 import requests
 import multiprocessing
-import signal
+from splunkhec import hec
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -20,9 +20,7 @@ splunk_hec_token = "B373AE38-902D-4DFC-87BE-43E0E5D5AB09"
 splunk_sourcetype = "access_combined"
 splunk_source = "hec:nginx"
 
-
 class kafkaConsumer:
-
     def __init__(self,
                  brokers=[],
                  zookeeper_server="",
@@ -34,10 +32,10 @@ class kafkaConsumer:
                  splunk_hec_channel="",
                  splunk_hec_token="",
                  splunk_sourcetype="",
-                 splunk_source=""):
+                 splunk_source="",
+                 batch_size=1024):
 
-
-        self.max_len = 1024
+        self.batch_size = batch_size
         self.messages = []
         self.brokers = brokers
         self.client = KafkaClient(hosts=','.join(self.brokers))
@@ -54,9 +52,9 @@ class kafkaConsumer:
         self.initLogger()
 
     def initLogger(self):
-        logging.basicConfig(filename='kafka-consumer.log',
-                            format='%(asctime)s name=%(name)s loglevel=%(levelname)s message=%(message)s',
-                            level=logging.DEBUG)
+        log_format = '%(asctime)s name=%(name)s loglevel=%(levelname)s message=%(message)s'
+        logging.basicConfig(format=log_format,
+                            level=logging.INFO)
 
     def consume(self):
         topic = self.client.topics[self.topic]
@@ -64,28 +62,31 @@ class kafkaConsumer:
         consumer = topic.get_balanced_consumer(zookeeper_connect=self.zookeeper_server, 
                                                  consumer_group=self.consumer_group,
                                                  use_rdkafka=self.use_rdkafka)
+
+        # create splunk hec instance
+        splunk_hec = hec(splunk_server,
+                         splunk_hec_port,
+                         splunk_hec_channel,
+                         splunk_hec_token,
+                         splunk_sourcetype,
+                         splunk_source)
         while(True):
             m = consumer.consume()
-            if(len(self.messages) < self.max_len):
+            if(len(self.messages) < self.batch_size):
                 self.messages.append(m.value)
             else:
-                token_string = "Splunk %s" % self.splunk_hec_token
-                post_string = 'https://%s:%s/services/collector/raw?channel=%s&sourcetype=%s&source=%s' % (self.splunk_server, self.splunk_hec_port, self.splunk_hec_channel, self.splunk_sourcetype, self.splunk_source)
- 
+                # write batch of batch_size messages to HEC
+                splunk_hec.writeToHec(self.messages)
 
-                res = requests.post(post_string,
-                                    data = '\n'.join(self.messages),
-                                    verify = False,
-                                    headers = {'Authorization' : token_string}
-                                   )
-                logging.debug("wrote %s messages to HEC at %s:%s" % (len(self.messages),
-                                                                    self.splunk_server,
-                                                                    self.splunk_hec_port))
+                # Clear out messages
                 self.messages = []
+
+                # commit offsets in Kafka
                 consumer.commit_offsets()
 
 def worker(num):
-    print("Worker-%s" % (num))
+    worker = "Worker-%s" % (num)
+    print(worker)
     consumer = kafkaConsumer(brokers,
                              zookeeper_server,
                              topic,
@@ -101,12 +102,16 @@ def worker(num):
     consumer.consume()
 
 def main():
-   #kconsumer.consume()
+    multiprocessing.log_to_stderr(logging.INFO)
+
     for i in range(3):
         worker_name = "worker-%s" % i
         p = multiprocessing.Process(name=worker_name, target=worker, args=(i,))
         jobs.append(p)
         p.start()
+
+    for j in jobs:
+        j.join()
 
 if __name__ == '__main__':
 
