@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 from pykafka import KafkaClient
 import logging
-import requests
 import multiprocessing
 from splunkhec import hec
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 jobs = []
 brokers = ["172.17.0.2:9092","172.17.0.3:9093","172.17.0.4:9094"]
