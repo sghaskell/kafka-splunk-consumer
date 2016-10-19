@@ -81,14 +81,16 @@ class kafkaConsumer:
                 # write batch of batch_size messages to HEC
                 status_code = splunk_hec.writeToHec(self.messages)
 
-                if(status_code == 200):
-                    # Clear out messages
-                    self.messages = []
+                # clear messages
+                self.messages = []
 
+                if(status_code == 200):
                     # commit offsets in Kafka
                     consumer.commit_offsets()
                 else:
                     logging.error("Failed to send events to Splunk HTTP Event Collector. Verify server, port, token and channel are correct")
+                    # Stop consumer and create new instance with auto-start
+                    # This will attempt to re-read the messages from the last commited offset
                     consumer.stop()
                     consumer = self.getConsumer(topic)
 
