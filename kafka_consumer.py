@@ -55,12 +55,16 @@ class kafkaConsumer:
         logging.basicConfig(format=log_format,
                             level=logging.DEBUG)
 
+    def getConsumer(self, topic):
+        consumer = topic.get_balanced_consumer(zookeeper_connect=self.zookeeper_server, 
+                                               consumer_group=self.consumer_group,
+                                               use_rdkafka=self.use_rdkafka)
+        return consumer
+
     def consume(self):
         topic = self.client.topics[self.topic]
 
-        consumer = topic.get_balanced_consumer(zookeeper_connect=self.zookeeper_server, 
-                                                 consumer_group=self.consumer_group,
-                                                 use_rdkafka=self.use_rdkafka)
+        consumer = self.getConsumer(topic)
 
         # create splunk hec instance
         splunk_hec = hec(self.splunk_server,
@@ -85,6 +89,8 @@ class kafkaConsumer:
                     consumer.commit_offsets()
                 else:
                     logging.error("Failed to send events to Splunk HTTP Event Collector. Verify server, port, token and channel are correct")
+                    consumer.stop()
+                    consumer = self.getConsumer(topic)
 
 def worker(num, config):
     worker = "Worker-%s" % (num)
