@@ -14,7 +14,7 @@ def parseArgs():
     argparser = argparse.ArgumentParser() 
     argparser.add_argument('-c',
                            '--config',
-                           default='kafka_consumer.conf',
+                           default='kafka_consumer.yml',
                            help='Kafka consumer config file')
     flags = argparser.parse_args()
     return(flags)
@@ -75,13 +75,16 @@ class kafkaConsumer:
                 self.messages.append(m.value)
             else:
                 # write batch of batch_size messages to HEC
-                splunk_hec.writeToHec(self.messages)
+                status_code = splunk_hec.writeToHec(self.messages)
 
-                # Clear out messages
-                self.messages = []
+                if(status_code == 200):
+                    # Clear out messages
+                    self.messages = []
 
-                # commit offsets in Kafka
-                consumer.commit_offsets()
+                    # commit offsets in Kafka
+                    consumer.commit_offsets()
+                else:
+                    logging.error("Failed to send events to Splunk HTTP Event Collector. Verify server, port, token and channel are correct")
 
 def worker(num, config):
     worker = "Worker-%s" % (num)
@@ -96,7 +99,8 @@ def worker(num, config):
                              config['hec']['channel'],
                              config['hec']['token'],
                              config['hec']['sourcetype'],
-                             config['hec']['source'])
+                             config['hec']['source'],
+                             config['general']['batch_size'])
 
     consumer.consume()
 
@@ -123,5 +127,4 @@ def main():
         j.join()
 
 if __name__ == '__main__':
-
     main()
