@@ -32,5 +32,5 @@ channel=%s&sourcetype=%s&source=%s' % (self.splunk_server,
                             data = '\n'.join(messages),
                             verify = False,
                             headers = {'Authorization' : self.token_string})
-        logging.debug("wrote %s messages to HEC at %s" % (len(messages),
-                                                             self.post_string))
+
+        return res.status_code
