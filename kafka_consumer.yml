@@ -1,26 +1,48 @@
 hec:
+    # Splunk HEC host or VIP to load balanced HEC instances
     host: 172.17.0.5
+    # HEC port - default 8088
     port: 8088
+    # App specific UUID used by HEC - generate your own using 'uuidgen' in Linux
     channel: 408c8da1-b9b1-460b-aeb4-56426865bca1
+    # HEC token for your input
     token: B373AE38-902D-4DFC-87BE-43E0E5D5AB01
+    # Set input sourcetype
     sourcetype: access_combined
+    # Set input source
     source: hec:nginx 
 kafka:
+    # List of Kafka brokers
     brokers:
         - 172.17.0.2:9092
         - 172.17.0.3:9093
         - 172.17.0.4:9094
+    # Zookeeper hostname/ip
     zookeeper_server: localhost
+    # Zookeeper port
     zookeeper_port: 2181
+    # Arbitrary group name used for coordinating workers in topic
     consumer_group: shark
+    # Kafka topic name
     topic: nginx
-    use_rdkafka: True
+    # If you ahve librdkafka installed use this to increase speed
+    # Valid values: True or False
+    use_rdkafka: False
 general:
+    # Set to number of partitions in the topic
+    # Do not exceed number of cores on your system - spread across multiple machines
     workers: 3
+    # Number of messages to send to Splunk
     batch_size: 1024
 network:
+    # Backoff policy settings
+    # Number of retry attempts before quitting
     retry_attempts: 5
+    # Sleeptime between retries
     sleeptime: 60
+    # maximum sleeptime
     max_sleeptime: 300 
+    # sleep time multiplier applied to each iteration
     sleepscale: 1.5
+    # random jitter introduced to each iteration, random between [-jitter, +jitter]
     jitter: 5 
