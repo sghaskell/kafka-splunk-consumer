@@ -32,7 +32,11 @@ general:
     # Set to number of partitions in the topic
     # Do not exceed number of cores on your system - spread across multiple machines
     workers: 3
-    # Number of messages to send to Splunk
+    # Number of messages to send to Splunk in each HTTP call to HEC
+    # Data will not be sent until there is >= batch_size events in the topic.
+    # Increase or decrease depending on activity in topic. 
+    # WARNING: If you set this to 1 it will increase the activity on your network and decrease
+    # throughput to the HEC.
     batch_size: 1024
 network:
     # Backoff policy settings
