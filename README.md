@@ -1,4 +1,7 @@
 ## Kafka Consumer For Splunk
+### Description
+A Kafka consumer that implements a pykafka balanced consumer and Python multiprocessing to send messages to Splunk HTTP Event collector tier with scalability, parallelism and high availability in mind.
+
 ### Compatibility
 * Kafka >= 0.8.2
 * Developed against Kafka 0.10.0.0
