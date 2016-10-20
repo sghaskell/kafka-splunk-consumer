@@ -6,7 +6,7 @@ from splunkhec import hec
 import argparse
 import sys
 import yaml
-from pprint import pprint
+from redo import retry
 
 jobs = []
 
@@ -32,9 +32,12 @@ class kafkaConsumer:
                  splunk_hec_token="",
                  splunk_sourcetype="",
                  splunk_source="",
-                 batch_size=1024):
-
-        self.batch_size = batch_size
+                 batch_size=1024,
+                 retry_attempts=5,
+                 sleeptime=60,
+                 max_sleeptime=300,
+                 sleepscale=1.5,
+                 jitter=1):
         self.messages = []
         self.brokers = brokers
         self.client = KafkaClient(hosts=','.join(self.brokers))
@@ -48,6 +51,13 @@ class kafkaConsumer:
         self.splunk_hec_token = splunk_hec_token
         self.splunk_sourcetype = splunk_sourcetype
         self.splunk_source = splunk_source
+        self.batch_size = batch_size
+        self.retry_attempts=retry_attempts
+        self.sleeptime=sleeptime
+        self.max_sleeptime=max_sleeptime
+        self.sleepscale=sleepscale
+        self.jitter=jitter
+        self.consumer_started = False
         self.initLogger()
 
     def initLogger(self):
@@ -59,12 +69,38 @@ class kafkaConsumer:
         consumer = topic.get_balanced_consumer(zookeeper_connect=self.zookeeper_server, 
                                                consumer_group=self.consumer_group,
                                                use_rdkafka=self.use_rdkafka)
+        self.consumer_started = True
         return consumer
 
-    def consume(self):
-        topic = self.client.topics[self.topic]
+    def sendToSplunk(self,
+                     splunk_hec):
+        # Initialize and start consumer if down
+        if(not self.consumer_started):
+            self.consumer = self.getConsumer(self.client.topics[self.topic])
 
-        consumer = self.getConsumer(topic)
+        # Attempt to send messages to Splunk
+        status_code = splunk_hec.writeToHec(self.messages)
+
+        # clear messages
+        self.messages = []
+
+        # Check for successful delivery
+        if(status_code == 200):
+            # commit offsets in Kafka
+            self.consumer.commit_offsets()
+            return
+        else:
+            # Stop consumer and mark it down
+            self.consumer.stop()
+            self.consumer_started = False
+
+            # Raise exception for retry
+            logging.error("Failed to send data to Splunk HTTP Event Collector - check host, port, token & channel")
+            raise Exception('Failed to send data to Splunk HTTP Event Collector - Retrying')
+
+
+    def consume(self):
+        self.consumer = self.getConsumer(self.client.topics[self.topic])
 
         # create splunk hec instance
         splunk_hec = hec(self.splunk_server,
@@ -74,25 +110,19 @@ class kafkaConsumer:
                          self.splunk_sourcetype,
                          self.splunk_source)
         while(True):
-            m = consumer.consume()
+            m = self.consumer.consume()
+
             if(len(self.messages) < self.batch_size):
                 self.messages.append(m.value)
             else:
-                # write batch of batch_size messages to HEC
-                status_code = splunk_hec.writeToHec(self.messages)
-
-                # clear messages
-                self.messages = []
-
-                if(status_code == 200):
-                    # commit offsets in Kafka
-                    consumer.commit_offsets()
-                else:
-                    logging.error("Failed to send events to Splunk HTTP Event Collector. Verify server, port, token and channel are correct")
-                    # Stop consumer and create new instance with auto-start
-                    # This will attempt to re-read the messages from the last commited offset
-                    consumer.stop()
-                    consumer = self.getConsumer(topic)
+                retry(self.sendToSplunk,
+                      attempts=self.retry_attempts,
+                      sleeptime=self.sleeptime,
+                      max_sleeptime=self.max_sleeptime,
+                      sleepscale=self.sleepscale,
+                      jitter=self.jitter,
+                      retry_exceptions=(Exception,),
+                      args=(splunk_hec,))
 
 def worker(num, config):
     worker = "Worker-%s" % (num)
@@ -108,7 +138,12 @@ def worker(num, config):
                              config['hec']['token'],
                              config['hec']['sourcetype'],
                              config['hec']['source'],
-                             config['general']['batch_size'])
+                             config['general']['batch_size'],
+                             config['network']['retry_attempts'],
+                             config['network']['sleeptime'],
+                             config['network']['max_sleeptime'],
+                             config['network']['sleepscale'],
+                             config['network']['jitter'])
 
     consumer.consume()
 

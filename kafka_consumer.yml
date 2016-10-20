@@ -2,7 +2,7 @@ hec:
     host: 172.17.0.5
     port: 8088
     channel: 408c8da1-b9b1-460b-aeb4-56426865bca1
-    token: B373AE38-902D-4DFC-87BE-43E0E5D5AB09
+    token: B373AE38-902D-4DFC-87BE-43E0E5D5AB01
     sourcetype: access_combined
     source: hec:nginx 
 kafka:
@@ -17,3 +17,10 @@ kafka:
     use_rdkafka: True
 general:
     workers: 3
+    batch_size: 1024
+network:
+    retry_attempts: 4
+    sleeptime: 15
+    max_sleeptime: 300 
+    sleepscale: 1.5
+    jitter: 10
