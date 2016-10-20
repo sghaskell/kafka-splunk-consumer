@@ -19,8 +19,8 @@ general:
     workers: 3
     batch_size: 1024
 network:
-    retry_attempts: 4
-    sleeptime: 15
+    retry_attempts: 5
+    sleeptime: 60
     max_sleeptime: 300 
     sleepscale: 1.5
-    jitter: 10
+    jitter: 5 
