@@ -25,7 +25,7 @@ kafka:
     consumer_group: shark
     # Kafka topic name
     topic: nginx
-    # If you ahve librdkafka installed use this to increase speed
+    # If you have librdkafka installed use this to increase speed
     # Valid values: True or False
     use_rdkafka: False
 general:
