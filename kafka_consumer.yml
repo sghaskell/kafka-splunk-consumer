@@ -25,9 +25,9 @@ kafka:
     consumer_group: shark
     # Kafka topic name
     topic: nginx
-    # If you have librdkafka installed use this to increase speed
+    # If you have librdkafka installed and pykafka was built against it, use this to increase speed
     # Valid values: True or False
-    use_rdkafka: False
+    use_rdkafka: True
 general:
     # Set to number of partitions in the topic
     # Do not exceed number of cores on your system - spread across multiple machines
