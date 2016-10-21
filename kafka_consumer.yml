@@ -76,3 +76,6 @@ network:
     sleepscale: 1.5
     # random jitter introduced to each iteration, random between [-jitter, +jitter]
     jitter: 5 
+logging:
+    # (logging.DEBUG|logging.INFO|logging.WARNING|logging.ERROR|logging.CRITICAL)
+    loglevel: logging.DEBUG
