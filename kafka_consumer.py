@@ -36,8 +36,11 @@ from redo import retry
 
 jobs = []
 
-""" Parse command line arguments """
 def parseArgs():
+    """ Parse command line arguments 
+    Returns:
+    flags -- parsed command line arguments
+    """
     argparser = argparse.ArgumentParser() 
     argparser.add_argument('-c',
                            '--config',
