@@ -55,8 +55,9 @@ kafka:
     # Valid values: True or False
     use_rdkafka: True
 general:
-    # Set to number of partitions in the topic
+    # Set to number of partitions in the topic for maximum parallelism and throughput
     # Do not exceed number of cores on your system - spread across multiple machines
+    # Do not set workers across all instances > # of partitions in topic - will result in idle wokrers
     workers: 3
     # Number of messages to send to Splunk in each HTTP call to HEC
     # Data will not be sent until there is >= batch_size events in the topic.
