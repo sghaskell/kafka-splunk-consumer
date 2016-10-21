@@ -34,6 +34,7 @@ import sys
 import yaml
 from redo import retry
 
+# List to hold jobs for multiprocessing
 jobs = []
 
 def parseArgs():
@@ -218,7 +219,6 @@ def worker(num, config):
     config -- parsed YAML config
     """
     worker = "Worker-%s started" % (num)
-    logging.info(worker)
     consumer = kafkaConsumer(config['kafka']['brokers'],
                              config['kafka']['zookeeper_server'],
                              config['kafka']['topic'],
