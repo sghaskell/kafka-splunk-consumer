@@ -210,8 +210,9 @@ class kafkaConsumer:
             # Append messages to list until we've hit self.batch_size
             if(len(self.messages) <= self.batch_size):
                 self.messages.append(m.value)
+
             # Send messages to Splunk HEC
-            else:
+            if(len(self.messages) == self.batch_size):
                 retry(self.sendToSplunk,
                       attempts=self.retry_attempts,
                       sleeptime=self.sleeptime,
