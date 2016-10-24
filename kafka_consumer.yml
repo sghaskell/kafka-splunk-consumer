@@ -38,6 +38,7 @@ hec:
     # Set input source
     source: hec:nginx 
     # Verify SSL certificate
+    # Valid values: True|False
     verify_ssl: False
 kafka:
     # List of Kafka brokers <host>:<port>
@@ -54,7 +55,7 @@ kafka:
     # Kafka topic name
     topic: nginx
     # If you have librdkafka installed and pykafka was built against it, use this to increase speed
-    # Valid values: True or False
+    # Valid values: True|False
     use_rdkafka: True
 general:
     # Set to number of partitions in the topic for maximum parallelism and throughput
