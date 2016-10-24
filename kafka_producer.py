@@ -31,19 +31,33 @@ from random import randint
 from datetime import datetime
 import re
 
+# Update with your topic
+TOPIC = "nginx" 
+
+# Update with your list of Kafka brokers <host>:<port>
+KAFKA_HOSTS = "172.17.0.2:9092,172.17.0.3:9093,172.17.0.4:9094"
+
+# Use rdkafka if pykafka is built against librdkafka
+USE_RDKAFKA = True
+
 def readFile(log_file):
+    """ open file and return contents """
+
     fh = open(log_file, 'r')
     lines = fh.readlines()
     fh.close()
     return(lines)
 
 def main():
+    """ Simple Kafka producer to publish random NGINX events from access.log for testing """
+
     access_log_file = './access.log'
     dt_fmt = '%d/%b/%Y:%H:%M:%S'
 
-    client = KafkaClient(hosts="172.17.0.2:9092,172.17.0.3:9093,172.17.0.4:9094")
-    topic = client.topics['nginx']
-    producer = topic.get_producer(use_rdkafka=True)
+    client = KafkaClient(hosts=KAFKA_HOSTS)
+
+    topic = client.topics[TOPIC]
+    producer = topic.get_producer(use_rdkafka=USE_RDKAFKA)
 
     access_logs = readFile(access_log_file)
     log_len = len(access_logs)
@@ -63,5 +77,4 @@ def main():
             continue
 
 if __name__ == '__main__':
-
     main()
