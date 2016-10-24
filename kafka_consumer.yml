@@ -37,6 +37,8 @@ hec:
     sourcetype: access_combined
     # Set input source
     source: hec:nginx 
+    # Verify SSL certificate
+    verify_ssl: False
 kafka:
     # List of Kafka brokers <host>:<port>
     brokers:
