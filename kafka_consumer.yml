@@ -37,6 +37,9 @@ hec:
     sourcetype: access_combined
     # Set input source
     source: hec:nginx 
+    # Use HTTPS
+    # Valid values: True (HTTPS) | False (HTTP)
+    use_https: True
     # Verify SSL certificate
     # Valid values: True|False
     verify_ssl: False

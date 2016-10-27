@@ -39,6 +39,7 @@ class hec:
                  splunk_hec_token="",
                  splunk_sourcetype="",
                  splunk_source="",
+                 use_https=True,
                  verify_ssl=True):
         """ 
         Keyword Arguments:
@@ -56,10 +57,13 @@ class hec:
         self.splunk_hec_token = splunk_hec_token
         self.splunk_sourcetype = splunk_sourcetype
         self.splunk_source = splunk_source
+        self.use_https = use_https
         self.verify_ssl = verify_ssl
         self.token_string = "Splunk %s" % self.splunk_hec_token
-        self.post_string = 'https://%s:%s/services/collector/raw?\
-channel=%s&sourcetype=%s&source=%s' % (self.splunk_server,
+        self.protocol = "https" if use_https else "http"
+        self.post_string = '%s://%s:%s/services/collector/raw?\
+channel=%s&sourcetype=%s&source=%s' % (self.protocol,
+                                       self.splunk_server,
                                        self.splunk_hec_port,
                                        self.splunk_hec_channel,
                                        self.splunk_sourcetype,

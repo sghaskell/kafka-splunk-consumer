@@ -65,6 +65,7 @@ class kafkaConsumer:
                  splunk_hec_token="",
                  splunk_sourcetype="",
                  splunk_source="",
+                 use_https=True,
                  verify_ssl=True,
                  batch_size=1024,
                  retry_attempts=5,
@@ -111,6 +112,7 @@ class kafkaConsumer:
         self.splunk_hec_token = splunk_hec_token
         self.splunk_sourcetype = splunk_sourcetype
         self.splunk_source = splunk_source
+        self.use_https = use_https
         self.verify_ssl = verify_ssl
         self.batch_size = batch_size
         self.retry_attempts=retry_attempts
@@ -203,6 +205,7 @@ class kafkaConsumer:
                          self.splunk_hec_token,
                          self.splunk_sourcetype,
                          self.splunk_source,
+                         self.use_https,
                          self.verify_ssl)
         while(True):
             m = self.consumer.consume()
@@ -227,7 +230,6 @@ def worker(num, config):
     Arguments:
     config -- parsed YAML config
     """
-    worker = "Worker-%s started" % (num)
     consumer = kafkaConsumer(config['kafka']['brokers'],
                              config['kafka']['zookeeper_server'],
                              config['kafka']['topic'],
@@ -239,6 +241,7 @@ def worker(num, config):
                              config['hec']['token'],
                              config['hec']['sourcetype'],
                              config['hec']['source'],
+                             config['hec']['use_https'],
                              config['hec']['verify_ssl'],
                              config['general']['batch_size'],
                              config['network']['retry_attempts'],
