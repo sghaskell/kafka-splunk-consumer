@@ -5,6 +5,7 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 ### Compatibility
 * Kafka >= 0.8.2
 * Developed against Kafka 0.10.0.0
+* Requires Zookeeper to balance multiple consumers
 
 ### Dependencies
 * [Python >= 2.7](https://www.python.org/downloads/)
@@ -13,6 +14,7 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 * [PyYaml](http://pyyaml.org/)
 * [redo](https://pypi.python.org/pypi/redo)
 * [splunkhec](https://github.com/sghaskell/kafka-splunk-consumer/blob/master/splunkhec.py)
+* [python-snappy](https://pypi.python.org/pypi/python-snappy) (Optional support for snappy compression)
 
 ### Limitations
 * Does not currently support TLS connections to Kafka
