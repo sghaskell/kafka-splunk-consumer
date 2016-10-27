@@ -24,7 +24,7 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
     * [Configure an NGINX load balancer for HEC](http://dev.splunk.com/view/event-collector/SP-CAAAE9Q)
 
 ### Configuration
-See comments in the sample YAML file for all available configuration options. 
+See comments in the sample YAML file for all available configuration options.
 
 ### Usage
 ```bash
@@ -37,6 +37,8 @@ This script can be run on as many servers as you like to scale out consuming fro
 The splunk HTTP Event Collector should be deployed as a tier of collectors behind a VIP or load balancer. See the links in the [Limitations](https://github.com/sghaskell/kafka-splunk-consumer#limitations) section above for architrecture guidance.
 
 For more information on the specifics of the pykafka balanced consumer and its benefits, see [this section of the docs](http://pykafka.readthedocs.io/en/latest/roadmap.html#simpleconsumer-vs-balancedconsumer).
+
+If you have a busy topic and you're not getting the throughput you had hoped, consider disabling HTTPS for your HTTP Event Collector tier to see if that speeds up ingest rates. (see [`use_https`](https://github.com/sghaskell/kafka-splunk-consumer/blob/master/kafka_consumer.yml#L42))
 
 ### Bugs & Feature Requests
 Please feel free to file bugs or feature requests if something isn't behaving or there's a shortcoming feature-wise.
