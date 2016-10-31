@@ -86,5 +86,5 @@ network:
     # random jitter (seconds) introduced to each iteration, random between [-jitter, +jitter]
     jitter: 5 
 logging:
-    # (debug|info|warning|error|critical)
+    # Valid values: debug|info|warning|error|critical
     loglevel: debug
