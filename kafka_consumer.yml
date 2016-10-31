@@ -38,7 +38,7 @@ hec:
     # Set input source
     source: hec:nginx 
     # Use HTTPS
-    # Valid values: True (HTTPS) | False (HTTP)
+    # Valid values: True (HTTPS)|False (HTTP)
     use_https: True
     # Verify SSL certificate
     # Valid values: True|False
@@ -65,10 +65,10 @@ general:
     # Do not exceed number of cores on your system - spread across multiple machines
     # Do not set workers across all instances > # of partitions in topic - will result in idle wokrers
     # Set to 'auto' for python multiprocessing to figure out core count
-    # Valid values (auto | <number_of_cores>)
+    # Valid values: auto|<number_of_cores>
     workers: 3
     # Number of messages to send to Splunk in each HTTP call to HEC
-    # Data will not be sent until there is >= batch_size events in the topic.
+    # Data will not be sent until there is batch_size events in the topic.
     # Increase or decrease depending on activity in topic. 
     # WARNING: If you set this to 1 it will increase the activity on your network and decrease
     # throughput to the HEC.
