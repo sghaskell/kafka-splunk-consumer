@@ -24,7 +24,7 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
     * [Configure an NGINX load balancer for HEC](http://dev.splunk.com/view/event-collector/SP-CAAAE9Q)
 
 ### Configuration
-See comments in the sample YAML file for all available configuration options.
+See comments in the [sample YAML file](https://github.com/sghaskell/kafka-splunk-consumer/blob/master/kafka_consumer.yml) for all available configuration options.
 
 ### Usage
 ```bash
