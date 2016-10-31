@@ -77,13 +77,13 @@ network:
     # Backoff policy settings
     # Number of retry attempts before quitting
     retry_attempts: 5
-    # Sleeptime between retries
+    # Sleeptime between retries (seconds)
     sleeptime: 60
-    # maximum sleeptime
+    # maximum sleeptime (seconds)
     max_sleeptime: 300 
-    # sleep time multiplier applied to each iteration
+    # sleep time (seconds) multiplier applied to each iteration
     sleepscale: 1.5
-    # random jitter introduced to each iteration, random between [-jitter, +jitter]
+    # random jitter (seconds) introduced to each iteration, random between [-jitter, +jitter]
     jitter: 5 
 logging:
     # (debug|info|warning|error|critical)
