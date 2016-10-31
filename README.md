@@ -15,7 +15,10 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 * [PyYaml](http://pyyaml.org/)
 * [redo](https://pypi.python.org/pypi/redo)
 * [splunkhec](https://github.com/sghaskell/kafka-splunk-consumer/blob/master/splunkhec.py)
-* [python-snappy](https://pypi.python.org/pypi/python-snappy) (Optional support for snappy compression)
+
+Optional Software
+* [python-snappy](https://pypi.python.org/pypi/python-snappy) - support for snappy compression
+* [librdkafka](https://github.com/edenhill/librdkafka) - Speed up consumer using C wrapper around librdkafka. [See docs for details](http://pykafka.readthedocs.io/en/latest/roadmap.html?highlight=rdkafka#pure-python-vs-rdkafka).
 
 ### Limitations
 * Does not currently support TLS connections to Kafka. ([See enhancement](https://github.com/sghaskell/kafka-splunk-consumer/issues/2))
