@@ -3,6 +3,7 @@
 A Kafka consumer that implements a pykafka balanced consumer and Python multiprocessing to send messages to Splunk HTTP Event collector tier with scalability, parallelism and high availability in mind.
 
 ### Compatibility
+* Splunk >= 6.4.0 (uses [HEC Raw endpoint](http://docs.splunk.com/Documentation/Splunk/latest/RESTREF/RESTinput#services.2Fcollector.2Fraw))
 * Kafka >= 0.8.2
 * Developed against Kafka 0.10.0.0
 * Requires Zookeeper to balance multiple consumers
@@ -19,7 +20,7 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 ### Limitations
 * Does not currently support TLS connections to Kafka
 * Supports one Splunk HTTP Event Collecor host.
-  * A scalable and highly available HEC tier should be behind a VIP/load balancer. Please reference the following articles
+  * A scalable and highly available HEC tier should be behind a VIP/load balancer. Please reference the following articles:
     * [High volume HTTP Event Collector Using Load Balancer](http://dev.splunk.com/view/event-collector/SP-CAAAE9Q)
     * [Configure an NGINX load balancer for HEC](http://dev.splunk.com/view/event-collector/SP-CAAAE9Q)
 
