@@ -142,6 +142,7 @@ class kafkaConsumer:
         log_format = '%(asctime)s name=%(name)s loglevel=%(levelname)s message=%(message)s'
         logging.basicConfig(format=log_format,
                             level=loglevel)
+    	multiprocessing.log_to_stderr(loglevel)
 
     def getConsumer(self, topic):
         """ Get a pykafka balanced consumer instance
@@ -277,11 +278,21 @@ def parseConfig(config):
 
 def main():
     """ Parse args, parse YAML config, initialize workers and go. """
+    # Parse args
     flags = parseArgs()
+    # Parse YAML
     config = parseConfig(flags.config)
-    multiprocessing.log_to_stderr(logging.INFO)
+
+    # Get number of workers from config
     num_workers = config['general']['workers']
-    
+
+    # Check for 'auto' and set number of workers with multiprocessing.cpu_count
+    if(isinstance(num_workers, str)):
+        if(num_workers == 'auto'):
+            num_workers = multiprocessing.cpu_count()
+        else:
+            raise Exception("Please set workers to 'auto' or <number_of_cpu_cores>")
+        
     for i in range(num_workers):
         worker_name = "worker-%s" % i
         p = multiprocessing.Process(name=worker_name, target=worker, args=(i,config))
