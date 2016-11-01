@@ -60,6 +60,19 @@ kafka:
     # If you have librdkafka installed and pykafka was built against it, use this to increase speed
     # Valid values: True|False
     use_rdkafka: True
+    # Configuration section for brokers secured with SSL
+    # See: http://kafka.apache.org/documentation.html#security_ssl
+    ssl:
+        # Valid values: True|False (default: False)
+        use_ssl: True
+        # Path to trusted CA certificate
+        cafile: /home/shaskell/cacert
+        # Path to client certificate
+        certfile: /home/shaskell/client-cert-signed
+        # Path to client private-key file
+        keyfile: /home/shaskell/client-key
+        # Password for private key
+        password: test1234
 general:
     # Set to number of partitions in the topic for maximum parallelism and throughput
     # Do not exceed number of cores on your system - spread across multiple machines

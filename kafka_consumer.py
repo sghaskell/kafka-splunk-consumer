@@ -31,7 +31,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-from pykafka import KafkaClient
+from pykafka import KafkaClient, SslConfig
 import logging
 import multiprocessing
 from splunkhec import hec
@@ -65,6 +65,10 @@ class kafkaConsumer:
                  topic="",
                  consumer_group="",
                  use_rdkafka=False,
+                 kafka_use_ssl=False,
+                 kafka_ssl_cafile="",
+                 kafka_ssl_certfile="",
+                 kafka_ssl_keyfile="",
                  splunk_server="",
                  splunk_hec_port="8088",
                  splunk_hec_channel="",
@@ -87,6 +91,11 @@ class kafkaConsumer:
         topic (string) --  Kafka topic to be consumed
         consumer_group (string) -- Arbitrary group name to manage balanced consumption of topic
         use_rdkafka (boolean) -- Use librdkafka for speed increase
+        kafka_use_ssl (boolean) -- Use SSL to communicate with secured Kafka brokers
+        kafka_ssl_cafile (string) -- Path to trusted CA certificate
+        kafka_ssl_certfile (string) --  Path to client certificate
+        kafka_ssl_keyfile (string) --  Path to client private-key file
+        kafka_ssl_password (string) -- Password for private key
         splunk_server (string) -- Hostname or IP address of HEC server or load balancer
         splunk_hec_port (string) -- Port of Splunk HEC server (default 8088)
         splunk_hec_channel (string) -- UUID used by Splunk HEC on per application basis
@@ -108,7 +117,18 @@ class kafkaConsumer:
         """
         self.messages = []
         self.brokers = brokers
-        self.client = KafkaClient(hosts=','.join(self.brokers))
+
+        # Create SSL client if configured
+        if(kafka_use_ssl):
+            self.kafka_ssl_config = SslConfig(cafile=kafka_ssl_cafile,
+                                              certfile=kafka_ssl_certfile,
+                                              keyfile=kafka_ssl_keyfile,
+                                              password=kafka_ssl_password)
+            self.client = KafkaClient(hosts=','.join(self.brokers), ssl_config=self.kafka_ssl_config)
+        # Create plaintext client
+        else:
+            self.client = KafkaClient(hosts=','.join(self.brokers))
+
         self.zookeeper_server = zookeeper_server
         self.topic = topic
         self.consumer_group = consumer_group
@@ -244,6 +264,11 @@ def worker(num, config):
                              config['kafka']['topic'],
                              config['kafka']['consumer_group'],
                              config['kafka']['use_rdkafka'],
+                             config['kafka']['ssl']['use_ssl'],
+                             config['kafka']['ssl']['cafile'],
+                             config['kafka']['ssl']['certfile'],
+                             config['kafka']['ssl']['keyfile'],
+                             config['kafka']['ssl']['password'],
                              config['hec']['host'],
                              config['hec']['port'],
                              config['hec']['channel'],
