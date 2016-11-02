@@ -32,6 +32,7 @@ THE SOFTWARE.
 """
 
 from pykafka import KafkaClient, SslConfig
+from pykafka.common import OffsetType
 import logging
 import multiprocessing
 from splunkhec import hec
@@ -63,6 +64,7 @@ class kafkaConsumer:
                  brokers=[],
                  zookeeper_server="",
                  topic="",
+                 initial_offset=OffsetType.EARLIEST,
                  consumer_group="",
                  use_rdkafka=False,
                  kafka_use_ssl=False,
@@ -90,6 +92,7 @@ class kafkaConsumer:
         brokers (list) -- list of Kafka brokers <host>:<port>
         zookeeper_sever (string) -- zookeeper server of Kafka cluster
         topic (string) --  Kafka topic to be consumed
+        initial_offset (OffsetType) -- Initial offset for new topic: earliest or latest offset (default: earliest)
         consumer_group (string) -- Arbitrary group name to manage balanced consumption of topic
         use_rdkafka (boolean) -- Use librdkafka for speed increase
         kafka_use_ssl (boolean) -- Use SSL to communicate with secured Kafka brokers
@@ -132,6 +135,7 @@ class kafkaConsumer:
 
         self.zookeeper_server = zookeeper_server
         self.topic = topic
+        self.initial_offset = OffsetType.EARLIEST if initial_offset.lower() == 'earliest' else OffsetType.LATEST
         self.consumer_group = consumer_group
         self.use_rdkafka = use_rdkafka
         self.splunk_server = splunk_server
@@ -177,7 +181,8 @@ class kafkaConsumer:
 
         consumer = topic.get_balanced_consumer(zookeeper_connect=self.zookeeper_server, 
                                                consumer_group=self.consumer_group,
-                                               use_rdkafka=self.use_rdkafka)
+                                               use_rdkafka=self.use_rdkafka,
+                                               auto_offset_reset=self.initial_offset)
         self.consumer_started = True
 
         return consumer
@@ -263,6 +268,7 @@ def worker(num, config):
     consumer = kafkaConsumer(config['kafka']['brokers'],
                              config['kafka']['zookeeper_server'],
                              config['kafka']['topic'],
+                             config['kafka']['initial_offset'],
                              config['kafka']['consumer_group'],
                              config['kafka']['use_rdkafka'],
                              config['kafka']['ssl']['use_ssl'],

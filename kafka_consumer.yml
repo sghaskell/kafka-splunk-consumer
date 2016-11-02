@@ -57,6 +57,9 @@ kafka:
     consumer_group: shark
     # Kafka topic name
     topic: nginx
+    # Initial offset - Set to earliest for earliest offset or latest for latest offset
+    # Valued values: earliest|latest
+    initial_offset: earliest
     # If you have librdkafka installed and pykafka was built against it, use this to increase speed
     # Valid values: True|False
     use_rdkafka: True
