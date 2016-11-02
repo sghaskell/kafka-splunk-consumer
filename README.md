@@ -18,7 +18,7 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 
 #### Optional
 * [python-snappy](https://pypi.python.org/pypi/python-snappy) - support for snappy compression
-* [librdkafka](https://github.com/edenhill/librdkafka) - Speed up consumer using C wrapper around librdkafka. [See docs for details](http://pykafka.readthedocs.io/en/latest/roadmap.html?highlight=rdkafka#pure-python-vs-rdkafka).
+* [librdkafka](https://github.com/edenhill/librdkafka) - Speed up consumer using C wrapper around librdkafka. See docs [here](http://pykafka.readthedocs.io/en/latest/roadmap.html?highlight=rdkafka#pure-python-vs-rdkafka) and [here](https://github.com/Parsely/pykafka#using-the-librdkafka-extension) for details.
 
 ### Limitations
 * Supports one Splunk HTTP Event Collecor host.
