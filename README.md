@@ -21,7 +21,6 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 * [librdkafka](https://github.com/edenhill/librdkafka) - Speed up consumer using C wrapper around librdkafka. [See docs for details](http://pykafka.readthedocs.io/en/latest/roadmap.html?highlight=rdkafka#pure-python-vs-rdkafka).
 
 ### Limitations
-* Currently reads earliest offset from queue (all messages) on first run. ([See enhancement](https://github.com/sghaskell/kafka-splunk-consumer/issues/2))
 * Supports one Splunk HTTP Event Collecor host.
   * A scalable and highly available HEC tier should be behind a VIP/load balancer. Please reference the following articles:
     * [High volume HTTP Event Collector Using Load Balancer](http://dev.splunk.com/view/event-collector/SP-CAAAE9Q)
