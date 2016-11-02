@@ -61,6 +61,7 @@ kafka:
     # Valued values: earliest|latest
     initial_offset: earliest
     # If you have librdkafka installed and pykafka was built against it, use this to increase speed
+    # See: https://github.com/Parsely/pykafka#using-the-librdkafka-extension
     # Valid values: True|False
     use_rdkafka: True
     # Configuration section for brokers secured with SSL
