@@ -69,6 +69,7 @@ class kafkaConsumer:
                  kafka_ssl_cafile="",
                  kafka_ssl_certfile="",
                  kafka_ssl_keyfile="",
+                 kafka_ssl_password="",
                  splunk_server="",
                  splunk_hec_port="8088",
                  splunk_hec_channel="",
