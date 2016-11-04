@@ -20,6 +20,18 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 * [python-snappy](https://pypi.python.org/pypi/python-snappy) - support for snappy compression
 * [librdkafka](https://github.com/edenhill/librdkafka) - Speed up consumer using C wrapper around librdkafka. See docs [here](http://pykafka.readthedocs.io/en/latest/roadmap.html?highlight=rdkafka#pure-python-vs-rdkafka) and [here](https://github.com/Parsely/pykafka#using-the-librdkafka-extension) for details.
 
+### Features
+* Multiprocessing for parallelization in consumption. Scale vertically and horizontally across multiple instances.
+* Support for Gzip and Snappy compression (with optional python-snappy module installed)
+* Automatically handles nested [Message Sets](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-Messagesets)
+* SSL Kafka Consumer for secured clusters
+* Ability to set per topic sourcetype and source metadata values
+* Supports Kafka consumer groups for auto load balancing consumers across a topic
+* Http/Https support for Splunk HTTP Event Collector
+* Specify custom message bactch size to reduce network overhead
+* Built-in retry with configurable parameters in the event of network issues or an outage
+* Offsets only update after successfully sending to HEC (HTTP status code 200) to ensure delivery of messages in topic
+
 ### Limitations
 * Supports one Splunk HTTP Event Collecor host.
   * A scalable and highly available HEC tier should be behind a VIP/load balancer. Please reference the following articles:
