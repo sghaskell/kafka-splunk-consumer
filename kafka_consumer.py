@@ -293,7 +293,7 @@ def worker(num, config):
                                  config.get('network').get('jitter'),
                                  config.get('logging').get('loglevel'))
         consumer.consume()
-    except KeyboardInterrupt:
+    except(KeyboardInterrupt, SystemExit):
             raise Exception("Exiting via ctrl-c input from user")
 
 def parseConfig(config):
