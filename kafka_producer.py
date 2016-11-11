@@ -72,9 +72,8 @@ def main():
             rand_log = re.sub(r'\[([\d\w:\/]+)', '[%s' % new_time, rand_log)
 
             producer.produce(rand_log)
-        except Exception as e:
-            print "failed"
-            continue
+        except (KeyboardInterrupt, SystemExit):
+            raise Exception("Exit via ctrl-c from user")
 
 if __name__ == '__main__':
     main()
