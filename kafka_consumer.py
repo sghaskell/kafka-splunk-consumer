@@ -265,34 +265,36 @@ def worker(num, config):
     Arguments:
     config -- parsed YAML config
     """
-    consumer = kafkaConsumer(config['kafka']['brokers'],
-                             config['kafka']['zookeeper_server'],
-                             config['kafka']['topic'],
-                             config['kafka']['initial_offset'],
-                             config['kafka']['consumer_group'],
-                             config['kafka']['use_rdkafka'],
-                             config['kafka']['ssl']['use_ssl'],
-                             config['kafka']['ssl']['cafile'],
-                             config['kafka']['ssl']['certfile'],
-                             config['kafka']['ssl']['keyfile'],
-                             config['kafka']['ssl']['password'],
-                             config['hec']['host'],
-                             config['hec']['port'],
-                             config['hec']['channel'],
-                             config['hec']['token'],
-                             config['hec']['sourcetype'],
-                             config['hec']['source'],
-                             config['hec']['use_https'],
-                             config['hec']['verify_ssl'],
-                             config['general']['batch_size'],
-                             config['network']['retry_attempts'],
-                             config['network']['sleeptime'],
-                             config['network']['max_sleeptime'],
-                             config['network']['sleepscale'],
-                             config['network']['jitter'],
-                             config['logging']['loglevel'])
-
-    consumer.consume()
+    try:
+        consumer = kafkaConsumer(config.get('kafka').get('brokers'),
+                                 config.get('kafka').get('zookeeper_server'),
+                                 config.get('kafka').get('topic'),
+                                 config.get('kafka').get('initial_offset'),
+                                 config.get('kafka').get('consumer_group'),
+                                 config.get('kafka').get('use_rdkafka'),
+                                 config.get('kafka').get('ssl').get('use_ssl'),
+                                 config.get('kafka').get('ssl').get('cafile'),
+                                 config.get('kafka').get('ssl').get('certfile'),
+                                 config.get('kafka').get('ssl').get('keyfile'),
+                                 config.get('kafka').get('ssl').get('password'),
+                                 config.get('hec').get('host'),
+                                 config.get('hec').get('port'),
+                                 config.get('hec').get('channel'),
+                                 config.get('hec').get('token'),
+                                 config.get('hec').get('sourcetype'),
+                                 config.get('hec').get('source'),
+                                 config.get('hec').get('use_https'),
+                                 config.get('hec').get('verify_ssl'),
+                                 config.get('general').get('batch_size'),
+                                 config.get('network').get('retry_attempts'),
+                                 config.get('network').get('sleeptime'),
+                                 config.get('network').get('max_sleeptime'),
+                                 config.get('network').get('sleepscale'),
+                                 config.get('network').get('jitter'),
+                                 config.get('logging').get('loglevel'))
+        consumer.consume()
+    except KeyboardInterrupt:
+            raise Exception("Exiting via ctrl-c input from user")
 
 def parseConfig(config):
     """ Parse YAML config 
