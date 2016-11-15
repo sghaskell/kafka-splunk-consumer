@@ -55,5 +55,13 @@ For more information on the specifics of the pykafka balanced consumer and its b
 
 If you have a busy topic and you're not getting the throughput you had hoped, consider disabling HTTPS for your HTTP Event Collector tier to see if that speeds up ingest rates. (see [`use_https`](https://github.com/sghaskell/kafka-splunk-consumer/blob/master/kafka_consumer.yml#L42))
 
+If you're using Splunk 6.4, I suggest you bump up the max content length for the http input in limits.conf. It is set far too low by default (1MB). I'd bump it up to the default setting in Splunk 6.5 (800MB)
+
+```
+[http_input]
+# The max request content length (800MB, to match HTTP server).
+max_content_length = 838860800
+```
+
 ### Bugs & Feature Requests
 Please feel free to file bugs or feature requests if something isn't behaving or there's a shortcoming feature-wise.
