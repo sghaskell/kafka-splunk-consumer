@@ -36,7 +36,7 @@ from pykafka import KafkaClient, SslConfig
 from pykafka.common import OffsetType
 import logging
 import multiprocessing
-from splunkhec import hec
+from splunkhec.client import hec
 import argparse
 import sys
 import yaml
