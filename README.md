@@ -43,7 +43,7 @@ See comments in the [sample YAML file](https://github.com/sghaskell/kafka-splunk
 
 ### Usage
 ```bash
-$ python kafka_consumer.py [-f <config.yml>]
+$ kafka_consumer -f <config.yml>
 ```
 
 ### Deployment Guidance
