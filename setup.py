@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 # Information Configuration Goes Here
 author = "Scott Haskell"
 author_email = "shaskell@splunk.com"
-version = "0.3b"
+version = "0.5b"
 classifiers = ["Development Status :: 4 - Beta",
                "Environment :: Console",
                "Intended Audience :: Developers",
