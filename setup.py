@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 # Information Configuration Goes Here
 author = "Scott Haskell"
 author_email = "shaskell@splunk.com"
-version = "0.3b"
+version = "0.5b"
 classifiers = ["Development Status :: 4 - Beta",
                "Environment :: Console",
                "Intended Audience :: Developers",
@@ -35,7 +35,7 @@ platforms = ["MacOS",
              "Unix"]
 data_files = [('config', ['config/kafka_consumer.yml']),
               ('config', ['config/access.log'])]
-scripts = ["scripts/kafka_consumer"]
+scripts = ["scripts/kafka_splunk_consumer"]
 
 # Setup tools configuration goes here
 setup(
