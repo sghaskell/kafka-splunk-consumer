@@ -35,7 +35,7 @@ platforms = ["MacOS",
              "Unix"]
 data_files = [('config', ['config/kafka_consumer.yml']),
               ('config', ['config/access.log'])]
-scripts = ["scripts/kafka_consumer"]
+scripts = ["scripts/kafka_splunk_consumer"]
 
 # Setup tools configuration goes here
 setup(

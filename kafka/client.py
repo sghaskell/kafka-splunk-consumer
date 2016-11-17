@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Author: Scott Haskell
 Company: Splunk Inc.
@@ -34,29 +33,11 @@ THE SOFTWARE.
 
 from pykafka import KafkaClient, SslConfig
 from pykafka.common import OffsetType
-import logging
-import multiprocessing
-from splunkhec.client import hec
-import argparse
-import sys
-import yaml
 from redo import retry
-
-# List to hold jobs for multiprocessing
-jobs = []
-
-def parseArgs():
-    """ Parse command line arguments 
-    Returns:
-    flags -- parsed command line arguments
-    """
-    argparser = argparse.ArgumentParser() 
-    argparser.add_argument('-c',
-                           '--config',
-                           default='kafka_consumer.yml',
-                           help='Kafka consumer config file')
-    flags = argparser.parse_args()
-    return(flags)
+import logging
+from splunkhec.client import hec
+import sys
+import multiprocessing
 
 class kafkaConsumer:
     """ Kafka consumer class """
@@ -260,87 +241,3 @@ class kafkaConsumer:
                       jitter=self.jitter,
                       retry_exceptions=(Exception,),
                       args=(splunk_hec,))
-
-def worker(num, config):
-    """ Create kafkaConsumer instance and consume topic
-    Arguments:
-    config -- parsed YAML config
-    """
-    try:
-        consumer = kafkaConsumer(config.get('kafka').get('brokers'),
-                                 config.get('kafka').get('zookeeper_server'),
-                                 config.get('kafka').get('topic'),
-                                 config.get('kafka').get('initial_offset'),
-                                 config.get('kafka').get('consumer_group'),
-                                 config.get('kafka').get('use_rdkafka'),
-                                 config.get('kafka').get('ssl').get('use_ssl'),
-                                 config.get('kafka').get('ssl').get('cafile'),
-                                 config.get('kafka').get('ssl').get('certfile'),
-                                 config.get('kafka').get('ssl').get('keyfile'),
-                                 config.get('kafka').get('ssl').get('password'),
-                                 config.get('hec').get('host'),
-                                 config.get('hec').get('port'),
-                                 config.get('hec').get('channel'),
-                                 config.get('hec').get('token'),
-                                 config.get('hec').get('sourcetype'),
-                                 config.get('hec').get('source'),
-                                 config.get('hec').get('use_https'),
-                                 config.get('hec').get('verify_ssl'),
-                                 config.get('general').get('batch_size'),
-                                 config.get('network').get('retry_attempts'),
-                                 config.get('network').get('sleeptime'),
-                                 config.get('network').get('max_sleeptime'),
-                                 config.get('network').get('sleepscale'),
-                                 config.get('network').get('jitter'),
-                                 config.get('logging').get('loglevel'))
-        consumer.consume()
-    except(KeyboardInterrupt, SystemExit):
-            raise Exception("Exiting via ctrl-c input from user")
-
-def parseConfig(config):
-    """ Parse YAML config 
-    Arguments:
-    config (string) -- path to YAML config
-
-    Returns:
-    parsed YAML config file
-    """
-    try:
-        with open(config, 'r') as stream:
-            try:
-                return(yaml.load(stream))
-            except yaml.YAMLError as exc:
-		sys.stderr.write("Failed to parse config file %s" % sys.argv[1])
-    except IOError as e:
-        sys.stderr.write("I/O error(%s): %s %s\n" % (e.errno, e.strerror, e.filename))
-        sys.stderr.write("Usage: %s -c <config.yml>\n" % (sys.argv[0]))
-        sys.exit(-1)
-
-def main():
-    """ Parse args, parse YAML config, initialize workers and go. """
-    # Parse args
-    flags = parseArgs()
-    # Parse YAML
-    config = parseConfig(flags.config)
-
-    # Get number of workers from config
-    num_workers = config['general']['workers']
-
-    # Check for 'auto' and set number of workers with multiprocessing.cpu_count
-    if(isinstance(num_workers, str)):
-        if(num_workers == 'auto'):
-            num_workers = multiprocessing.cpu_count()
-        else:
-            raise Exception("Please set workers to 'auto' or <number_of_cpu_cores>")
-        
-    for i in range(num_workers):
-        worker_name = "worker-%s" % i
-        p = multiprocessing.Process(name=worker_name, target=worker, args=(i,config))
-        jobs.append(p)
-        p.start()
-
-    for j in jobs:
-        j.join()
-
-if __name__ == '__main__':
-    main()
