@@ -305,11 +305,16 @@ def parseConfig(config):
     Returns:
     parsed YAML config file
     """
-    with open(config, 'r') as stream:
-        try:
-            return(yaml.load(stream))
-        except yaml.YAMLError as exc:
-            print(exc)
+    try:
+        with open(config, 'r') as stream:
+            try:
+                return(yaml.load(stream))
+            except yaml.YAMLError as exc:
+		sys.stderr.write("Failed to parse config file %s" % sys.argv[1])
+    except IOError as e:
+        sys.stderr.write("I/O error(%s): %s %s\n" % (e.errno, e.strerror, e.filename))
+        sys.stderr.write("Usage: %s -c <config.yml>\n" % (sys.argv[0]))
+        sys.exit(-1)
 
 def main():
     """ Parse args, parse YAML config, initialize workers and go. """
