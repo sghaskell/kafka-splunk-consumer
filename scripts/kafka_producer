@@ -25,6 +25,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 # 
+"""
+Sample producer script to publish random nginx logs to Kafka.
+Copy this script and common/access.log into the same directory then
+update TOPIC, KAFKA_HOSTS and USE_RDKAFKA to fit your environment.
+"""
 from pykafka import KafkaClient
 import httplib
 from random import randint
