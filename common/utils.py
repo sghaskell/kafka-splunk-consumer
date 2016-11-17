@@ -31,6 +31,7 @@ THE SOFTWARE.
 
 import argparse
 import yaml
+import sys
 
 def parseArgs():
     """ Parse command line arguments 
