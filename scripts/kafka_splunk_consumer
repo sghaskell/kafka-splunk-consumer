@@ -87,7 +87,7 @@ def main():
     config = parseConfig(flags.config)
 
     # Get number of workers from config
-    num_workers = config['general']['workers']
+    num_workers = config.get('general').get('workers')
 
     # Check for 'auto' and set number of workers with multiprocessing.cpu_count
     if(isinstance(num_workers, str)):
