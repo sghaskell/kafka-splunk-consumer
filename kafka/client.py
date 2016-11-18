@@ -93,7 +93,7 @@ class kafkaConsumer:
         use_https (boolean) -- Use HTTPS or HTTP protocol to send to HEC
         verify_ssl (boolean) -- Verify SSL certificate of Splunk HEC endpoint (default True)
 	use_compression (boolean) -- Use gzip compression sending data to HEC
-	compresslevel (string) -- Compression level 1-9; 1=quickest/least, 9=slowest/most
+	compresslevel (string) -- Compression level 0-9; 0=none, 1=fastest/least, 9=slowest/most (default: 9)
         batch_size (int) -- Number of messages to consume before attempting to send to Splunk HEC
         retry_attempts (int) -- Number of retry attempts before quitting (default 1024)
         sleeptime (int) -- Sleeptime between retries (default 60)
