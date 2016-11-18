@@ -68,6 +68,8 @@ def worker(num, config):
                                  config.get('hec').get('source'),
                                  config.get('hec').get('use_https'),
                                  config.get('hec').get('verify_ssl'),
+                                 config.get('hec').get('use_compression'),
+                                 config.get('hec').get('compresslevel'),
                                  config.get('general').get('batch_size'),
                                  config.get('network').get('retry_attempts'),
                                  config.get('network').get('sleeptime'),

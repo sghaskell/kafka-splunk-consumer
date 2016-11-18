@@ -62,13 +62,15 @@ class kafkaConsumer:
                  splunk_source="",
                  use_https=True,
                  verify_ssl=True,
+                 use_compression=False,
+                 compresslevel=9,
                  batch_size=1024,
                  retry_attempts=5,
                  sleeptime=60,
                  max_sleeptime=300,
                  sleepscale=1.5,
                  jitter=1,
-                 loglevel="logging.WARNING"):
+                 loglevel="warning"):
         """
         Keyword Arguments:
         brokers (list) -- list of Kafka brokers <host>:<port>
@@ -90,6 +92,8 @@ class kafkaConsumer:
         splunk_source (string) -- Splunk source
         use_https (boolean) -- Use HTTPS or HTTP protocol to send to HEC
         verify_ssl (boolean) -- Verify SSL certificate of Splunk HEC endpoint (default True)
+	use_compression (boolean) -- Use gzip compression sending data to HEC
+	compresslevel (string) -- Compression level 0-9; 0=none, 1=fastest/least, 9=slowest/most (default: 9)
         batch_size (int) -- Number of messages to consume before attempting to send to Splunk HEC
         retry_attempts (int) -- Number of retry attempts before quitting (default 1024)
         sleeptime (int) -- Sleeptime between retries (default 60)
@@ -128,6 +132,8 @@ class kafkaConsumer:
         self.splunk_source = splunk_source
         self.use_https = use_https
         self.verify_ssl = verify_ssl
+        self.use_compression = use_compression
+        self.compresslevel = compresslevel
         self.batch_size = batch_size
         self.retry_attempts=retry_attempts
         self.sleeptime=sleeptime
@@ -223,7 +229,9 @@ class kafkaConsumer:
                          self.splunk_sourcetype,
                          self.splunk_source,
                          self.use_https,
-                         self.verify_ssl)
+                         self.verify_ssl,
+                         self.use_compression,
+                         self.compresslevel)
         while(True):
             m = self.consumer.consume()
             
