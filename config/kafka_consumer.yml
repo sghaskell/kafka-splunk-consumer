@@ -43,6 +43,11 @@ hec:
     # Verify SSL certificate
     # Valid values: True|False
     verify_ssl: False
+    # use gzip compression when sending data to HEC
+    # Valid values: True|False
+    use_compression: False
+    # Compression level 0-9; 0=none, 1=fastest/least, 9=slowest/most (default: 9)
+    compresslevel: 5
 kafka:
     # List of Kafka brokers <host>:<port>
     brokers:
