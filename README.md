@@ -24,11 +24,11 @@ A Kafka consumer that implements a pykafka balanced consumer and Python multipro
 * Multiprocessing for parallelization in consumption. Scale vertically and horizontally across multiple instances.
 * Support for Gzip and Snappy compression (with optional python-snappy module installed)
 * Transparently handles nested [Message Sets](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-Messagesets)
-* SSL Kafka Consumer for secured clusters
+* Support for SSL secured Kafka clusters
 * Ability to set per topic sourcetype and source metadata values
 * Supports Kafka consumer groups for auto load balancing consumers across a topic
 * Http/Https support for Splunk HTTP Event Collector
-* Specify custom message bactch size to reduce network overhead and increase throughput
+* Configurable message bactch size to reduce network overhead and increase throughput
 * Built-in retry with configurable parameters in the event of network issues or an outage
 * Offsets only update after successfully sending to HEC (HTTP status code 200) to ensure delivery of messages in topic
 
