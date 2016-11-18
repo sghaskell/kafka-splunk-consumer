@@ -30,6 +30,11 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import logging
+try:
+    from cStringIO import StringIO
+except:
+    from StringIO import StringIO
+import gzip
 
 class hec:
     """ Class for sending events to Splunk HTTP Event Collector Raw endpooint """
@@ -82,9 +87,20 @@ channel=%s&sourcetype=%s&source=%s' % (self.protocol,
         Returns:
         HTTP status code
         """
+        headers = {'Authorization' : self.token_string}
+        if self.use_compression:
+            headers['content-encoding'] = 'gzip'
+            mem_str = StringIO()
+            with gzip.GzipFile(fileobj=mem_str, mode="w", compresslevel=self.compresslevel) as f:
+                f.write('\n'.join(messages))
+            data = mem_str.getvalue()
+        else:
+            data = '\n'.join(messages)
+
         res = requests.post(self.post_string,
-                            data = '\n'.join(messages),
+                            data = data,
                             verify = self.verify_ssl,
-                            headers = {'Authorization' : self.token_string})
+                            headers = headers)
 
         return res.status_code
+
