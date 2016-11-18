@@ -68,7 +68,7 @@ class kafkaConsumer:
                  max_sleeptime=300,
                  sleepscale=1.5,
                  jitter=1,
-                 loglevel="logging.WARNING"):
+                 loglevel="warning"):
         """
         Keyword Arguments:
         brokers (list) -- list of Kafka brokers <host>:<port>
