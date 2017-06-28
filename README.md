@@ -52,6 +52,21 @@ See comments in the [sample YAML file](https://github.com/sghaskell/kafka-splunk
 $ kafka_splunk_consumer -c <config.yml>
 ```
 
+### Docker Image
+Added a Dockerfile based on Alpine Linux with librdkafka and the kafka-splunk-consumer installed. To use, create a config file locally in **/path/to/local/configdir**, mount it in the image and execute the **kafka_splunk_consumer** command pointing to the config file.
+
+**Build**
+
+```
+$ docker build -t sghaskell/kafka-splunk-consumer .
+```
+
+**Run**
+
+```
+$ docker run -it -v /path/to/local/configdir:/tmp sghaskell/kafka-splunk-consumer kafka_splunk_consumer -c /tmp/kafka_consumer.yml
+```
+
 ### Deployment Guidance
 This script can be run on as many servers as you like to scale out consumption of your Kafka topics. The script uses Python multiprocessing to take advantage of multiple cores. Configure as many instances of the script on as many servers as necessary to scale out consuming large volumes of messages. Do not exceed more workers than cores available for a given server. The number of workers across all your instances of the script should not exceed the number of partitions for a given topic. If you configure more workers than the number of partitions in the topic, you will have idle workers that will never get assigned to consume from a topic.
 
